@@ -14,11 +14,13 @@ import org.apache.http.impl.client.BasicCredentialsProvider
 class UtilHttp {
     private final Map<String, String> apiConfiguration
 
+    private String backendPath
+
     UtilHttp(Map<String, String> apiConfiguration) {
         this.apiConfiguration = apiConfiguration
     }
 
-    public CloseableHttpResponse sendGet(LinkedHashMap<String, Integer> query,
+    public CloseableHttpResponse sendGet(LinkedHashMap<String, Object> query,
                                          HttpClient httpClient) {
         BasicCredentialsProvider credsProvider = getCredentialsProvider()
         HttpClientContext context = getClientContext(credsProvider)
@@ -55,11 +57,14 @@ class UtilHttp {
                 .setScheme(backendScheme)
                 .setHost(backendHost)
                 .setPort(backendPort)
-                .setPath(backendPath)
+                .setPath(getBackendPath())
 
         query.each { k, v ->
             uriBuilder.setParameter(k, v.toString())
         }
+
+        //@todo: don't like this approach, but have to clear out backendpath for future requests
+        this.backendPath = null
 
         URI uri = uriBuilder.build()
         uri
@@ -77,8 +82,16 @@ class UtilHttp {
         apiConfiguration.get("backendPort").toInteger()
     }
 
-    private String getBackendPath() {
+    public String getBackendPath() {
+        if (this.backendPath) {
+            return this.backendPath
+        }
+
         apiConfiguration.get("backendPath")
+    }
+
+    void setBackendPath(String backendPath) {
+        this.backendPath = backendPath
     }
 
     private String getBackendUsername() {

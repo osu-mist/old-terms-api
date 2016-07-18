@@ -6,11 +6,13 @@ import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.api.AuthenticatedUser
 import edu.oregonstate.mist.termsapi.dao.TermsDAO
 import io.dropwizard.auth.Auth
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 import javax.ws.rs.GET
-import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
-import javax.ws.rs.Consumes
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.ResponseBuilder
 import javax.ws.rs.core.MediaType
@@ -20,6 +22,8 @@ import javax.ws.rs.core.MediaType
  */
 @Path('/terms/')
 class TermsResource extends Resource {
+    Logger logger = LoggerFactory.getLogger(TermsResource.class);
+
     private TermsDAO termsDAO
 
     TermsResource(TermsDAO termsDAO) {
@@ -29,9 +33,9 @@ class TermsResource extends Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Timed
-    public Response classSearch(@Auth AuthenticatedUser _) {
+    public Response getAllTerms(@Auth AuthenticatedUser _) {
         try {
-            def response = termsDAO.getData(getPageNumber(), getPageSize())
+            def response = termsDAO.getTerms(getPageNumber(), getPageSize())
             //@todo: these params are calcualted twice :(
             ResultObject resultObject = new ResultObject(data: response.data)
             setPaginationLinks(response.sourcePagination, resultObject)
@@ -40,6 +44,24 @@ class TermsResource extends Resource {
             responseBuilder.build()
         } catch (Exception e) {
             internalServerError("Woot you found a bug for us to fix!").build()
+            logger.error("Exception while getting all terms", e)
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path('{id: [0-9a-zA-Z]+}')
+    @Timed
+    public Response getTerm(@Auth AuthenticatedUser _, @PathParam('id') String term) {
+        try {
+            def response = termsDAO.getTerm(term)
+            ResultObject resultObject = new ResultObject(data: response)
+
+            ResponseBuilder responseBuilder = ok(resultObject)
+            responseBuilder.build()
+        } catch (Exception e) {
+            internalServerError("Woot you found a bug for us to fix!").build()
+            logger.error("Exception while getting a term", e)
         }
     }
 

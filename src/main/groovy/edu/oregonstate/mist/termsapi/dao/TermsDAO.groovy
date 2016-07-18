@@ -30,9 +30,9 @@ class TermsDAO {
      * @param pageSize
      * @return
      */
-    public def getData(Integer pageNumber, Integer pageSize) {
+    public def getTerms(Integer pageNumber, Integer pageSize) {
         CloseableHttpResponse response
-        def data = []
+        def data = new ArrayList<ResourceObject>()
         def sourcePagination = [totalCount: 0, pageOffset: 0, pageMaxSize: 0]
 
         try {
@@ -42,17 +42,57 @@ class TermsDAO {
             HttpEntity entity = response.getEntity()
             def entityString = EntityUtils.toString(entity)
 
-            data = this.mapper.readValue(entityString,
+            def sourceData = this.mapper.readValue(entityString,
                     new TypeReference<List<HashMap>>() {
                 })
 
             sourcePagination = getSourcePagination(response.getAllHeaders())
             EntityUtils.consume(entity)
+
+            sourceData.each {
+                data += getTermResourceObject(it)
+            }
         } finally {
             response?.close()
         }
 
-        [data: getFormattedData(data), sourcePagination: sourcePagination]
+        [data: data, sourcePagination: sourcePagination]
+    }
+
+    /**
+     * Performs class search and returns results in jsonapi format
+     *
+     * @param term
+     * @param subject
+     * @param courseNumber
+     * @param q
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    public def getTerm(String term) {
+        CloseableHttpResponse response
+        def sourceData = []
+
+        try {
+            def query = [:]
+            String backendPath = utilHttp.getBackendPath()
+            utilHttp.setBackendPath(backendPath + "/${term}")
+
+            response = utilHttp.sendGet(query, httpClient)
+
+            HttpEntity entity = response.getEntity()
+            def entityString = EntityUtils.toString(entity)
+
+            sourceData = this.mapper.readValue(entityString,
+                    new TypeReference<HashMap>() {
+                })
+            EntityUtils.consume(entity)
+        } finally {
+            response?.close()
+        }
+
+        getTermResourceObject(sourceData)
     }
 
     private static getSourcePagination(headers) {
@@ -69,30 +109,22 @@ class TermsDAO {
     }
 
     /**
-     * Takes the data from the backend and formats it based on the swagger spec.
+     * Constructs a resource object and associated attributes from map
      *
-     * @param data
-     * @return
+     * @param it
      */
-    private static List<ResourceObject> getFormattedData(def data) {
-        List<ResourceObject> result = new ArrayList<ResourceObject>()
+    private static getTermResourceObject(it) {
+        Attributes attributes = new Attributes(
+                code:               it.code,
+                description:        it.description,
+                startDate:          it.startDate,
+                endDate:            it.endDate,
+                financialAidYear:   it.financialAidProcessingYear,
+                housingStartDate:   it.housingStartDate,
+                housingEndDate:     it.housingEndDate
+        )
 
-        data.each {
-            Attributes attributes = new Attributes(
-                    code:               it.code,
-                    description:        it.description,
-                    startDate:          it.startDate,
-                    endDate:            it.endDate,
-                    financialAidYear:   it.financialAidProcessingYear,
-                    housingStartDate:   it.housingStartDate,
-                    housingEndDate:     it.housingEndDate
-            )
-
-            result << new ResourceObject(id: it.code, type: 'term',
-                    attributes: attributes)
-        }
-
-        result
+        new ResourceObject(id: it.code, type: 'term', attributes: attributes)
     }
 
     /**

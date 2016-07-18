@@ -21,14 +21,6 @@ import org.apache.http.client.HttpClient
  */
 class TermsApplication extends Application<TermsConfiguration> {
     /**
-     * Initializes application bootstrap.
-     *
-     * @param bootstrap
-     */
-    @Override
-    public void initialize(Bootstrap<Configuration> bootstrap) {}
-
-    /**
      * Parses command-line arguments and runs the application.
      *
      * @param configuration
