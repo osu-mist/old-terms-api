@@ -17,9 +17,6 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.ResponseBuilder
 import javax.ws.rs.core.MediaType
 
-/**
- * Sample resource class.
- */
 @Path('/terms/')
 class TermsResource extends Resource {
     Logger logger = LoggerFactory.getLogger(TermsResource.class);
@@ -36,15 +33,14 @@ class TermsResource extends Resource {
     public Response getAllTerms(@Auth AuthenticatedUser _) {
         try {
             def response = termsDAO.getTerms(getPageNumber(), getPageSize())
-            //@todo: these params are calcualted twice :(
+            //@todo: these params are calculated twice :(
             ResultObject resultObject = new ResultObject(data: response.data)
-            setPaginationLinks(response.sourcePagination, resultObject)
+            resultObject.links = setPaginationLinks(response.sourcePagination)
 
-            ResponseBuilder responseBuilder = ok(resultObject)
-            responseBuilder.build()
+            ok(resultObject).build()
         } catch (Exception e) {
-            internalServerError("Woot you found a bug for us to fix!").build()
             logger.error("Exception while getting all terms", e)
+            internalServerError("Woot you found a bug for us to fix!").build()
         }
     }
 
@@ -56,12 +52,10 @@ class TermsResource extends Resource {
         try {
             def response = termsDAO.getTerm(term)
             ResultObject resultObject = new ResultObject(data: response)
-
-            ResponseBuilder responseBuilder = ok(resultObject)
-            responseBuilder.build()
+            ok(resultObject).build()
         } catch (Exception e) {
-            internalServerError("Woot you found a bug for us to fix!").build()
             logger.error("Exception while getting a term", e)
+            internalServerError("Woot you found a bug for us to fix!").build()
         }
     }
 
@@ -73,18 +67,16 @@ class TermsResource extends Resource {
         try {
             def response = termsDAO.getOpenTerms()
             ResultObject resultObject = new ResultObject(data: response)
-
-            ResponseBuilder responseBuilder = ok(resultObject)
-            responseBuilder.build()
+            ok(resultObject).build()
         } catch (Exception e) {
-            internalServerError("Woot you found a bug for us to fix!").build()
             logger.error("Exception while getting open terms", e)
+            internalServerError("Woot you found a bug for us to fix!").build()
         }
     }
 
 
 
-    private void setPaginationLinks(def sourcePagination, ResultObject resultObject) {
+    private void setPaginationLinks(def sourcePagination) {
         // If no results were found, no need to add links
         if (!sourcePagination?.totalCount) {
             return
@@ -99,24 +91,26 @@ class TermsResource extends Resource {
 
         int lastPage = Math.ceil(sourcePagination.totalCount / pageSize)
 
-        resultObject.links["self"] = getPaginationUrl(urlParams)
+        links["self"] = getPaginationUrl(urlParams)
         urlParams.pageNumber = 1
-        resultObject.links["first"] = getPaginationUrl(urlParams)
+        links["first"] = getPaginationUrl(urlParams)
         urlParams.pageNumber = lastPage
-        resultObject.links["last"] = getPaginationUrl(urlParams)
+        links["last"] = getPaginationUrl(urlParams)
 
         if (pageNumber > DEFAULT_PAGE_NUMBER) {
             urlParams.pageNumber = pageNumber - 1
-            resultObject.links["prev"] = getPaginationUrl(urlParams)
+            links["prev"] = getPaginationUrl(urlParams)
         } else {
-            resultObject.links["prev"] = null
+            links["prev"] = null
         }
 
         if (sourcePagination?.totalCount > (pageNumber * pageSize)) {
             urlParams.pageNumber = pageNumber + 1
-            resultObject.links["next"] = getPaginationUrl(urlParams)
+            links["next"] = getPaginationUrl(urlParams)
         } else {
-            resultObject.links["next"] = null
+            links["next"] = null
         }
+
+        links
     }
 }

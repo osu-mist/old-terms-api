@@ -22,10 +22,6 @@ class TermsDAO {
     /**
      * Gets list of all terms and returns results in jsoanapi resource object lists
      *
-     * @param term
-     * @param subject
-     * @param courseNumber
-     * @param q
      * @param pageNumber
      * @param pageSize
      * @return
@@ -61,13 +57,6 @@ class TermsDAO {
 
     /**
      * Retrieves a single term as a ResourceObject
-     *
-     * @param term
-     * @param subject
-     * @param courseNumber
-     * @param q
-     * @param pageNumber
-     * @param pageSize
      * @return
      */
     public def getTerm(String term) {
@@ -98,12 +87,6 @@ class TermsDAO {
     /**
      * Returns list of open terms available for registration
      *
-     * @param term
-     * @param subject
-     * @param courseNumber
-     * @param q
-     * @param pageNumber
-     * @param pageSize
      * @return
      */
     public def getOpenTerms() {
@@ -169,10 +152,6 @@ class TermsDAO {
     /**
      * Parses out the parameters and adds them to a map if they are not empty
      *
-     * @param term
-     * @param subject
-     * @param courseNumber
-     * @param q
      * @param pageNumber
      * @param pageSize
      * @return
