@@ -7,6 +7,7 @@ import edu.oregonstate.mist.api.AuthenticatedUser
 import edu.oregonstate.mist.api.BasicAuthenticator
 import edu.oregonstate.mist.termsapi.dao.TermsDAO
 import edu.oregonstate.mist.termsapi.dao.UtilHttp
+import edu.oregonstate.mist.termsapi.health.BackendHealth
 import edu.oregonstate.mist.termsapi.resources.TermsResource
 import io.dropwizard.Application
 import io.dropwizard.client.HttpClientBuilder
@@ -54,8 +55,8 @@ class TermsApplication extends Application<TermsConfiguration> {
                                 AuthenticatedUser.class)))
 
         // healthchecks
-//        environment.healthChecks().register("backend",
-//                new BackendHealth(utilHttp, httpClient))
+        environment.healthChecks().register("backend",
+                new BackendHealth(utilHttp, httpClient))
     }
 
     /**

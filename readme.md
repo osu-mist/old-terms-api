@@ -1,6 +1,6 @@
-# Web API Skeleton
+# Terms API
 
-Skeleton for Dropwizard Web APIs.
+Returns terms used to search for classes in the class-search api
 
 ### Generate Keys
 
