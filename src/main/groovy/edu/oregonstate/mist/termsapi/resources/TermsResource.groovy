@@ -65,6 +65,25 @@ class TermsResource extends Resource {
         }
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path('/open')
+    @Timed
+    public Response getOpenTerms(@Auth AuthenticatedUser _) {
+        try {
+            def response = termsDAO.getOpenTerms()
+            ResultObject resultObject = new ResultObject(data: response)
+
+            ResponseBuilder responseBuilder = ok(resultObject)
+            responseBuilder.build()
+        } catch (Exception e) {
+            internalServerError("Woot you found a bug for us to fix!").build()
+            logger.error("Exception while getting open terms", e)
+        }
+    }
+
+
+
     private void setPaginationLinks(def sourcePagination, ResultObject resultObject) {
         // If no results were found, no need to add links
         if (!sourcePagination?.totalCount) {

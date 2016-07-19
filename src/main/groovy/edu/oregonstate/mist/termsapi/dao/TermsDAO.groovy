@@ -20,7 +20,7 @@ class TermsDAO {
     }
 
     /**
-     * Performs class search and returns results in jsonapi format
+     * Gets list of all terms and returns results in jsoanapi resource object lists
      *
      * @param term
      * @param subject
@@ -60,7 +60,7 @@ class TermsDAO {
     }
 
     /**
-     * Performs class search and returns results in jsonapi format
+     * Retrieves a single term as a ResourceObject
      *
      * @param term
      * @param subject
@@ -93,6 +93,45 @@ class TermsDAO {
         }
 
         getTermResourceObject(sourceData)
+    }
+
+    /**
+     * Returns list of open terms available for registration
+     *
+     * @param term
+     * @param subject
+     * @param courseNumber
+     * @param q
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    public def getOpenTerms() {
+        CloseableHttpResponse response
+        def data = new ArrayList<ResourceObject>()
+
+        try {
+            def query = [:]
+            utilHttp.setBackendOpenTermsPath()
+
+            response = utilHttp.sendGet(query, httpClient)
+
+            HttpEntity entity = response.getEntity()
+            def entityString = EntityUtils.toString(entity)
+
+            def sourceData = this.mapper.readValue(entityString,
+                    new TypeReference<List<HashMap>>() {
+                    })
+
+            EntityUtils.consume(entity)
+            sourceData.each {
+                data += getTermResourceObject(it)
+            }
+        } finally {
+            response?.close()
+        }
+
+        data
     }
 
     private static getSourcePagination(headers) {

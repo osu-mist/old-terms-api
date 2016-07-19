@@ -66,8 +66,7 @@ class UtilHttp {
         //@todo: don't like this approach, but have to clear out backendpath for future requests
         this.backendPath = null
 
-        URI uri = uriBuilder.build()
-        uri
+        uriBuilder.build()
     }
 
     private String getBackendHost() {
@@ -92,6 +91,10 @@ class UtilHttp {
 
     void setBackendPath(String backendPath) {
         this.backendPath = backendPath
+    }
+
+    void setBackendOpenTermsPath() {
+        this.backendPath = apiConfiguration.get("backendPathOpen")
     }
 
     private String getBackendUsername() {
