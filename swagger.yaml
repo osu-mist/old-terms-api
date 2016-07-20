@@ -1,78 +1,170 @@
 swagger: '2.0'
+
 info:
-  title: Web API Skeleton
-  description: Skeleton for Dropwizard Web APIs
-  version: '0.0'
-  license:
-    name: GNU Affero General Public License Version 3
-    url: http://www.gnu.org/licenses/agpl-3.0.en.html
-externalDocs:
-  description: GitHub Repository
-  url: https://github.com/osu-mist/web-api-skeleton
-host: localhost
-schemes:
-  - http
-basePath: /api/v0
-consumes:
-  - text/plain
-produces:
-  - text/plain
+  version: "0.0.1"
+  title: Terms API
+
 paths:
-  /:
+  /terms:
     get:
-      summary: Get information
-      description: Build and runtime information about the application.
-      responses:
-        200:
-          description: Object containing information
-          schema:
-            $ref: '#/definitions/Info'
-  /sample:
-    get:
-      summary: Get message
-      description: This is a sample resource that returns a short message.
-      responses:
-        200:
-          description: A short message
-          schema:
-            type: string
-        404:
-          description: Not found
-          schema:
-            $ref: '#/definitions/Error'
-    post:
-      summary: Post message
-      description: This is a sample resource that returns the message it receives.
+      tags:
+       - terms
+      description: "Gets all `terms` objects. These are school terms that relate to classes and housing. This includes terms from previous years as well as future terms."
+      operationId: getTerms
+      produces:
+        - application/json
       parameters:
-        - name: message
-          in: body
-          schema:
-            type: string
-          required: true
+        - in: query
+          name: page[size]
+          description: "Number of results to return. Used in pagination. Default value is 10."
+          required: false
+          type: string
+        - in: query
+          name: page[number]
+          description: "Page number of results. Used to paginate through results."
+          required: false
+          type: string
       responses:
-        200:
-          description: The message received
+        "200":
+          description: "Successful response"
           schema:
-            type: string
-        404:
-          description: Not found
+            $ref: "#/definitions/ResultObjects"
+        "404":
+          description: "Not Found"
           schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /terms/{code}:
+    get:
+      tags:
+       - terms
+      description: "Gets a single `terms` object."
+      operationId: getTerm
+      produces:
+        - application/json
+      parameters:
+        - name: code
+          in: path
+          description: "Building code used to identify a single term. This is a four digit number."
+          required: true
+          type: string
+        - in: query
+          name: page[size]
+          description: "Number of results to return. Used in pagination. Default value is 10."
+          required: false
+          type: string
+        - in: query
+          name: page[number]
+          description: "Page number of results. Used to paginate through results."
+          required: false
+          type: string
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ResultObject"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /terms/open:
+    get:
+      tags:
+       - terms
+      description: "Returns only the `term` objects that a student can register for."
+      operationId: getOpenTerms
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/ResultObjects"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
-  Info:
+  ResultObject:
     properties:
-      name:
+      links:
+        $ref: "#/definitions/Links"
+      data:
+        $ref: "#/definitions/ResourceObject"
+
+  ResultObjects:
+    properties:
+      links:
+        $ref: "#/definitions/Links"
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/ResourceObject"
+
+  ResourceObject:
+    properties:
+      id:
         type: string
-      time:
-        type: integer
-      commit:
+      type:
         type: string
-      documentation:
+      attributes:
+        $ref: "#/definitions/Attributes"
+
+  Attributes:
+    properties:
+      code:
         type: string
+        description: "Six digit code to identify the fiscal year and term. For example, Fall 2016 is identified as: 201701 and Summer 2016 as: 201700. This code is used to search for classes in a given term."
+      description:
+        type: string
+        description: "Human readable academic term description. Example: Fall 2016"
+      startDate:
+        type: string
+        description: "First day of classes in this term. Format is in: YYYY-MM-DD."
+      endDate:
+        type: string
+        description: "Last day of classes in this term. Format is in: YYYY-MM-DD."
+      financialAidYear:
+        type: string
+        description: "Aid year associated with this term. This is a four digit code. For example, for Summer 2016, the value would be: 1617"
+      housingStartDate:
+        type: string
+        description: "First day for meal plan and housing assignments. Format is in: YYYY-MM-DD."
+      housingEndDate:
+        type: string
+        description: "Last day for meal plan and housing assignments. Format is in: YYYY-MM-DD."
+
+  Links:
+    properties:
+      self:
+        type: string
+      first:
+        type: string
+      last:
+        type: string
+      prev:
+        type: string
+      next:
+        type: string
+
   Error:
+    type: object
     properties:
       status:
         type: integer
+        format: int32
       developerMessage:
         type: string
       userMesage:

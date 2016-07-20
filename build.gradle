@@ -36,11 +36,10 @@ dependencies {
     testCompile "io.dropwizard:dropwizard-testing:${dropwizardVersion}"
     codenarc "org.codenarc:CodeNarc:${codenarcVersion}"
     compile 'org.yaml:snakeyaml:1.16'
-    compile "org.codehaus.groovy:groovy:${groovyVersion}"
+    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     compile "io.dropwizard:dropwizard-core:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-auth:${dropwizardVersion}"
-    // compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
-    // compile ':ojdbc6_g:'
+    compile "io.dropwizard:dropwizard-client:${dropwizardVersion}"
 }
 
 codenarc {
@@ -58,7 +57,7 @@ jar {
 }
 
 tasks.withType(CodeNarc) {
-    maxPriority3Violations = 6
+    maxPriority3Violations = 2
 }
 
 // https://github.com/johnrengelman/shadow
@@ -95,4 +94,5 @@ task run(type: JavaExec, dependsOn: build) {
     main = "${mainClass}"
     classpath = sourceSets.main.runtimeClasspath
     args = ['server', 'configuration.yaml']
+    jvmArgs = ["-Djavax.net.ssl.trustStore=${keyStorePath}"]
 }
