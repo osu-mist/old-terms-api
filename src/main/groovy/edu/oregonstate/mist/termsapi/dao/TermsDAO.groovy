@@ -33,6 +33,7 @@ class TermsDAO {
 
         try {
             def query = getQueryMap(pageNumber, pageSize)
+            utilHttp.setDefaultBackendPath()
             response = utilHttp.sendGet(query, httpClient)
 
             HttpEntity entity = response.getEntity()
@@ -65,9 +66,7 @@ class TermsDAO {
 
         try {
             def query = [:]
-            String backendPath = utilHttp.getBackendPath()
-            utilHttp.setBackendPath(backendPath + "/${term}")
-
+            utilHttp.setBackendPathSingleTerm(term)
             response = utilHttp.sendGet(query, httpClient)
 
             HttpEntity entity = response.getEntity()
@@ -96,7 +95,6 @@ class TermsDAO {
         try {
             def query = [:]
             utilHttp.setBackendOpenTermsPath()
-
             response = utilHttp.sendGet(query, httpClient)
 
             HttpEntity entity = response.getEntity()

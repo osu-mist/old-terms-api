@@ -63,9 +63,6 @@ class UtilHttp {
             uriBuilder.setParameter(k, v.toString())
         }
 
-        //@todo: don't like this approach, but have to clear out backendpath for future requests
-        this.backendPath = null
-
         uriBuilder.build()
     }
 
@@ -82,19 +79,19 @@ class UtilHttp {
     }
 
     public String getBackendPath() {
-        if (this.backendPath) {
-            return this.backendPath
-        }
-
-        apiConfiguration.get("backendPath")
+        this.backendPath
     }
 
-    void setBackendPath(String backendPath) {
-        this.backendPath = backendPath
+    void setDefaultBackendPath() {
+        this.backendPath = apiConfiguration.get("backendPath")
     }
 
     void setBackendOpenTermsPath() {
         this.backendPath = apiConfiguration.get("backendPathOpen")
+    }
+
+    void setBackendPathSingleTerm(String term) {
+        this.backendPath = apiConfiguration.get("backendPathSingleTerm") + term
     }
 
     private String getBackendUsername() {

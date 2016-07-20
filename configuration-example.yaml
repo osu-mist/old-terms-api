@@ -51,6 +51,7 @@ terms:
   backendHost: example.com
   backendPort: 443
   backendPath: /path/one
+  backendPathSingleTerm: /path/one/
   backendPathOpen: /path/two
   backendUsername: secret
   backendPassword: sauce
