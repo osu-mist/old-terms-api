@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType
 
 @Path('/terms/')
 class TermsResource extends Resource {
-    Logger logger = LoggerFactory.getLogger(TermsResource.class);
+    Logger logger = LoggerFactory.getLogger(TermsResource.class)
 
     private TermsDAO termsDAO
 
@@ -74,9 +74,8 @@ class TermsResource extends Resource {
         }
     }
 
-
-
-    private void setPaginationLinks(def sourcePagination) {
+    private HashMap setPaginationLinks(def sourcePagination) {
+        def links = [:]
         // If no results were found, no need to add links
         if (!sourcePagination?.totalCount) {
             return
