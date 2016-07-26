@@ -158,7 +158,7 @@ class TermsDAO {
         def query = [offset:0]
 
         if (pageNumber && pageNumber > 1) {
-            query['offset'] = pageSize * pageNumber
+            query['offset'] = pageSize * (pageNumber -1)
         }
         if (pageSize) {
             query['max'] = pageSize
