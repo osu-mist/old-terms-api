@@ -7,8 +7,11 @@ from configuration_load import *
 class gateway_tests(unittest.TestCase):
 
 	# Tests that a good request returns a 200
-	def test_success(self):
-		self.assertEqual(good_request(url, access_token), 200)
+	def test_verbs(self):
+		self.assertEqual(good_request(url, access_token, "get"), 200)
+		self.assertEqual(good_request(url, access_token, "post"), 405)
+		self.assertEqual(good_request(url, access_token, "put"), 405)
+		self.assertEqual(good_request(url, access_token, "delete"), 405)
 
 	def test_attributes(self):
 		attributes = term_code_results(url, access_token)

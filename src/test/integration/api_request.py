@@ -5,10 +5,10 @@ import ssl
 from configuration_load import *
 
 
-def good_request(url, access_token):
+def good_request(url, access_token, verb):
     url += "open"
     headers = {'Authorization': access_token}
-    request = requests.get(url, headers=headers)
+    request = requests.request(verb, url, headers=headers)
     return request.status_code
 
 def term_code_results(url, access_token):
