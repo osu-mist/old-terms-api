@@ -106,7 +106,7 @@ class TermsDAO {
 
             EntityUtils.consume(entity)
             sourceData.each {
-                data += getTermResourceObject(it)
+                data += getTerm(it.code)
             }
         } finally {
             response?.close()
