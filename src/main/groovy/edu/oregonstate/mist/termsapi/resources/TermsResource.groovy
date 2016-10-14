@@ -51,6 +51,9 @@ class TermsResource extends Resource {
     public Response getTerm(@Auth AuthenticatedUser _, @PathParam('id') String term) {
         try {
             def response = termsDAO.getTerm(term)
+            if (!response.id) {
+                return notFound().build()
+            }
             ResultObject resultObject = new ResultObject(data: response)
             ok(resultObject).build()
         } catch (Exception e) {
