@@ -59,10 +59,22 @@ class gateway_tests(unittest.TestCase):
 
 	# Tests that a call using SSLv2 is unsuccessful
 	def test_ssl_v2(self):
+		try:
+			# openssl can be compiled without SSLv2 support, in which case
+			# the PROTOCOL_SSLv2 constant is not available
+			ssl.PROTOCOL_SSLv2
+		except AttributeError:
+			self.skipTest('SSLv2 support not available')
 		self.assertFalse(check_ssl(ssl.PROTOCOL_SSLv2, url, access_token))
 
 	# Tests that a call using SSLv3 is unsuccessful
 	def test_ssl_v3(self):
+		try:
+			# openssl can be compiled without SSLv3 support, in which case
+			# the PROTOCOL_SSLv3 constant is not available
+			ssl.PROTOCOL_SSLv3
+		except AttributeError:
+			self.skipTest('SSLv3 support not available')
 		self.assertFalse(check_ssl(ssl.PROTOCOL_SSLv3, url, access_token))
 
 if __name__ == '__main__':
@@ -77,7 +89,7 @@ if __name__ == '__main__':
 	del_list.reverse()
 
 	for i in del_list:
-	    del sys.argv[i]
+		del sys.argv[i]
 
 	url = get_endpoint_url(config_path)
 	access_token = get_access_token(config_path)
