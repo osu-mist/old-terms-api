@@ -5,7 +5,7 @@
 	"api": "/catalog/",
 	"terms_endpoint": "terms/",
 
-	"token_endpoint": "token",
+	"token_endpoint": "oauth2/token",
 
 	"client_id": "secret",
 	"client_secret": "sauce"
