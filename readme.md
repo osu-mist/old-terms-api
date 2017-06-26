@@ -80,6 +80,28 @@ Run the project:
 
     $ gradle run
 
+## Contrib Files
+
+Any code that contains intellectual property from a vendor should be stored in Github Enterprise instead of public Github. Make the name of the contrib repo in Github Enterprise follow this format using archivesBaseName in gradle.properties.
+
+    archivesBaseName-contrib
+
+Set the value of getContribFiles to yes in gradle.properties.
+
+    getContribFiles=yes
+
+Also set the value of contribCommit to the SHA1 of the desired commit to be used from the contrib repository.
+
+    contribCommit={SHA1}
+    
+Files in a Github Enterprise repo will be copied to this directory upon building the application.
+
+    gradle build
+
+Contrib files are copied to:
+
+    /src/main/groovy/edu/oregonstate/mist/contrib/
+    
 ## Base a New Project off the Skeleton
 
 Clone the skeleton:
@@ -144,7 +166,7 @@ This resource returns build and runtime information:
     > --cacert doej.pem \
     > --user "username:password" \
     > https://localhost:8080/api/v0/
-    {"name":"terms-api","time":1468976102073,"commit":"59f9ed6","documentation":"swagger.yaml"}
+    {"name":"web-api-skeleton","time":"2016-08-02 14:37:01-0700","unixTime":1470173821035,"commit":"e3d396e","documentation":"swagger.yaml"}
 
 ### GET /terms
 
@@ -164,7 +186,7 @@ This resource returns a single resource specified by the code:
     > --cacert doej.pem \
     > --user "username:password" \
     > https://localhost:8080/api/v0/terms/999999
-{"links":{},"data":{"id":"999999","type":"term","attributes":{"code":"999999","description":"The End of Time","startDate":"2999-06-08","endDate":"2999-12-31","financialAidYear":"9999","housingStartDate":"2999-06-09","housingEndDate":"2999-12-31"},"links":null}}
+    {"links":{},"data":{"id":"999999","type":"term","attributes":{"code":"999999","description":"The End of Time","startDate":"2999-06-08","endDate":"2999-12-31","financialAidYear":"9999","housingStartDate":"2999-06-09","housingEndDate":"2999-12-31"},"links":null}}
 
 ### GET /terms/open
 
