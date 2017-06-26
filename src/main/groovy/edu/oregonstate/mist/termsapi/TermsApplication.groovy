@@ -1,20 +1,18 @@
 package edu.oregonstate.mist.termsapi
 
-import edu.oregonstate.mist.api.Configuration
-import edu.oregonstate.mist.api.Resource
-import edu.oregonstate.mist.api.InfoResource
 import edu.oregonstate.mist.api.AuthenticatedUser
 import edu.oregonstate.mist.api.BasicAuthenticator
+import edu.oregonstate.mist.api.InfoResource
 import edu.oregonstate.mist.termsapi.dao.TermsDAO
 import edu.oregonstate.mist.termsapi.dao.UtilHttp
 import edu.oregonstate.mist.termsapi.health.BackendHealth
 import edu.oregonstate.mist.termsapi.resources.TermsResource
 import io.dropwizard.Application
+import io.dropwizard.auth.AuthDynamicFeature
+import io.dropwizard.auth.AuthValueFactoryProvider
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter
 import io.dropwizard.client.HttpClientBuilder
-import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
-import io.dropwizard.auth.AuthFactory
-import io.dropwizard.auth.basic.BasicAuthFactory
 import org.apache.http.client.HttpClient
 
 /**
@@ -29,7 +27,6 @@ class TermsApplication extends Application<TermsConfiguration> {
      */
     @Override
     public void run(TermsConfiguration configuration, Environment environment) {
-        Resource.loadProperties()
         environment.jersey().register(new InfoResource())
 
         // the httpclient from DW provides with many metrics and config options
@@ -47,12 +44,15 @@ class TermsApplication extends Application<TermsConfiguration> {
         termResource.setEndpointUri(configuration.api.endpointUri)
         environment.jersey().register(termResource)
 
-        environment.jersey().register(
-                AuthFactory.binder(
-                        new BasicAuthFactory<AuthenticatedUser>(
-                                new BasicAuthenticator(configuration.getCredentialsList()),
-                                'TermsApplication',
-                                AuthenticatedUser.class)))
+        environment.jersey().register(new AuthDynamicFeature(
+                new BasicCredentialAuthFilter.Builder<AuthenticatedUser>()
+                        .setAuthenticator(
+                            new BasicAuthenticator(configuration.getCredentialsList()))
+                        .setRealm('LocationApplication')
+                        .buildAuthFilter()
+        ))
+        environment.jersey().register(new AuthValueFactoryProvider.Binder
+                <AuthenticatedUser>(AuthenticatedUser.class))
 
         // healthchecks
         environment.healthChecks().register("backend",
