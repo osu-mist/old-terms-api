@@ -48,7 +48,7 @@ class TermsApplication extends Application<TermsConfiguration> {
                 new BasicCredentialAuthFilter.Builder<AuthenticatedUser>()
                         .setAuthenticator(
                             new BasicAuthenticator(configuration.getCredentialsList()))
-                        .setRealm('LocationApplication')
+                        .setRealm('TermsApplication')
                         .buildAuthFilter()
         ))
         environment.jersey().register(new AuthValueFactoryProvider.Binder
