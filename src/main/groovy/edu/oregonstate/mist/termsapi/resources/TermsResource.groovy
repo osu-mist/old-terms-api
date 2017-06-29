@@ -93,22 +93,24 @@ class TermsResource extends Resource {
 
         int lastPage = Math.ceil(sourcePagination.totalCount / pageSize)
 
-        links["self"] = getPaginationUrl(urlParams)
+        String baseResource = uriInfo.getMatchedURIs().get(uriInfo.getMatchedURIs().size() - 1)
+
+        links["self"] = getPaginationUrl(urlParams, baseResource)
         urlParams.pageNumber = 1
-        links["first"] = getPaginationUrl(urlParams)
+        links["first"] = getPaginationUrl(urlParams, baseResource)
         urlParams.pageNumber = lastPage
-        links["last"] = getPaginationUrl(urlParams)
+        links["last"] = getPaginationUrl(urlParams, baseResource)
 
         if (pageNumber > DEFAULT_PAGE_NUMBER) {
             urlParams.pageNumber = pageNumber - 1
-            links["prev"] = getPaginationUrl(urlParams)
+            links["prev"] = getPaginationUrl(urlParams, baseResource)
         } else {
             links["prev"] = null
         }
 
         if (sourcePagination?.totalCount > (pageNumber * pageSize)) {
             urlParams.pageNumber = pageNumber + 1
-            links["next"] = getPaginationUrl(urlParams)
+            links["next"] = getPaginationUrl(urlParams, baseResource)
         } else {
             links["next"] = null
         }
