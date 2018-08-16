@@ -55,12 +55,11 @@ class gateway_tests(unittest.TestCase):
 
     # Tests that a call using TLSv1.0 fails
     def test_tls_v1_0(self):
-        self.assertFalse(self.check_ssl(ssl.PROTOCOL_TLSv1, url, access_token))
+        self.assertFalse(check_ssl(ssl.PROTOCOL_TLSv1, url, access_token))
 
     # Tests that a call using TLSv1.1 fails
     def test_tls_v1_1(self):
-        self.assertFalse(
-            self.check_ssl(ssl.PROTOCOL_TLSv1_1, url, access_token))
+        self.assertFalse(check_ssl(ssl.PROTOCOL_TLSv1_1, url, access_token))
 
 	# Tests that a call using TLSv1.2 is successful
 	def test_tls_v1_2(self):
