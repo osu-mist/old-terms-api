@@ -51,7 +51,7 @@ class gateway_tests(unittest.TestCase):
 
 	# Tests that API response time is less than a value
 	def test_response_time(self):
-		self.assertLess(response_time(url, access_token), 4)
+		self.assertLess(response_time(url, access_token), 10)
 
 	# Tests that a call using TLSv1.0 fails
 	def test_tls_v1_0(self):
